@@ -4,6 +4,8 @@ import { Header } from './Header';
 import { BottomNav } from './BottomNav';
 import { AdminNotifier } from './AdminNotifier';
 import { AppToast } from './AppToast';
+import { useAuth } from '../context/AuthContext';
+import { cn } from '../lib/utils';
 
 const routeTitles: Record<string, string> = {
   '/': 'Fichaje',
@@ -16,6 +18,8 @@ const routeTitles: Record<string, string> = {
 
 export function Layout() {
   const location = useLocation();
+  const { profile } = useAuth();
+  const isAdmin = profile?.role === 'admin';
   const title = routeTitles[location.pathname] || 'GeoClock';
 
   return (
@@ -24,7 +28,10 @@ export function Layout() {
       <AppToast />
       <Header title={title} />
       
-      <main className="flex-1 flex flex-col relative w-full pt-20 pb-40 overflow-x-hidden">
+      <main className={cn(
+        "flex-1 flex flex-col relative w-full pt-20 overflow-x-hidden",
+        isAdmin ? "pb-24" : "pb-6"
+      )}>
         <Outlet />
       </main>
       

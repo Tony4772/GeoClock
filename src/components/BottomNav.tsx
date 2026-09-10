@@ -7,6 +7,8 @@ export function BottomNav() {
   const { profile } = useAuth();
   const isAdmin = profile?.role === 'admin';
 
+  if (!isAdmin) return null;
+
   return (
     <nav className="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]">
       <div className="h-16 px-space-xs flex justify-around items-center">

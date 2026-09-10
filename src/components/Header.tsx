@@ -8,6 +8,9 @@ interface HeaderProps {
 export function Header({ title }: HeaderProps) {
   const { profile, logout } = useAuth();
   const initial = profile?.name?.charAt(0)?.toUpperCase() || 'U';
+  
+  const isEmployee = profile?.role === 'employee';
+  const displayTitle = isEmployee && title === 'Fichaje' ? `Hola, ${profile?.name?.split(' ')[0]}` : title;
 
   return (
     <header className="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
@@ -17,7 +20,7 @@ export function Header({ title }: HeaderProps) {
             <span className="material-symbols-outlined text-[32px] text-primary">schedule</span>
             <div className="flex flex-col">
               <span className="font-label-md text-label-md text-primary leading-tight font-bold tracking-tight">GeoClock</span>
-              <span className="font-headline-sm text-headline-sm text-on-surface leading-tight font-bold tracking-tight">{title}</span>
+              <span className="font-headline-sm text-headline-sm text-on-surface leading-tight font-bold tracking-tight">{displayTitle}</span>
             </div>
           </div>
           <div className="flex items-center gap-space-sm">

@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../lib/firebase';
 import { doc, getDoc, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
-import { Branch, Punch } from '../types';
-import { format } from 'date-fns';
+import { Branch, Punch, DaySchedule } from '../types';
+import { format, addDays } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { getDistance } from 'geolib';
 import { cn } from '../lib/utils';
+import { CalendarDays } from 'lucide-react';
 
 export function Fichaje() {
   const { profile } = useAuth();
@@ -76,10 +77,21 @@ export function Fichaje() {
     }
     setPunching(true);
     try {
+      let todaysSchedule = null;
+      if (profile.weeklySchedule) {
+        const currentDayStr = new Date().getDay().toString();
+        todaysSchedule = profile.weeklySchedule[currentDayStr];
+        if (todaysSchedule && !todaysSchedule.isActive) {
+          todaysSchedule = null;
+        }
+      } else if (profile.schedule) {
+        todaysSchedule = profile.schedule; // Fallback to legacy
+      }
+
       const newPunch = {
         employeeId: profile.id, employeeName: profile.name, tenantId: profile.tenantId, branchId: profile.branchId,
         type, timestamp: serverTimestamp(), latitude: location!.lat, longitude: location!.lng, distance, status: 'valid',
-        scheduleSnapshot: profile.schedule || null
+        scheduleSnapshot: todaysSchedule
       };
       const docRef = await addDoc(collection(db, 'punches'), newPunch);
       setLastPunch({ id: docRef.id, ...newPunch, timestamp: new Date() } as unknown as Punch);
@@ -157,8 +169,124 @@ export function Fichaje() {
         )}
       </div>
 
+      <div className="grid grid-cols-2 gap-space-sm mb-4">
+        <div className="bg-surface-container rounded-xl p-space-sm flex flex-col justify-between shadow-xs">
+          <div className="flex items-center gap-space-xs text-on-surface-variant">
+            <span className="material-symbols-outlined text-[16px] text-secondary">history</span>
+            <span className="font-label-sm text-label-sm">Último Marcaje</span>
+          </div>
+          <div className="mt-space-xs">
+            <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
+              {lastPunch ? format(lastPunch.timestamp?.toDate ? lastPunch.timestamp.toDate() : new Date(), 'HH:mm') : 'Sin registro'}
+            </span>
+            <p className="font-body-sm text-body-sm text-outline">
+              {lastPunch ? (
+                lastPunch.type === 'in' ? 'Entrada' : 
+                lastPunch.type === 'lunch_start' ? 'Inicio Almuerzo' :
+                lastPunch.type === 'lunch_end' ? 'Fin Almuerzo' : 'Salida'
+              ) : 'Jornada no iniciada'}
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-surface-container rounded-xl p-space-sm flex flex-col justify-between shadow-xs">
+          <div className="flex items-center gap-space-xs text-on-surface-variant">
+            <span className="material-symbols-outlined text-[16px] text-secondary">schedule</span>
+            <span className="font-label-sm text-label-sm">Horario Hoy</span>
+          </div>
+          <div className="mt-space-xs">
+            {(() => {
+              const currentDayStr = new Date().getDay().toString();
+              const todayData = profile?.weeklySchedule?.[currentDayStr];
+              
+              if (todayData && todayData.isActive) {
+                return (
+                  <>
+                    <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
+                      {todayData.start} - {todayData.end}
+                    </span>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant">Horario asignado</p>
+                  </>
+                );
+              } else if (profile?.schedule) {
+                // Fallback for old schema
+                return (
+                  <>
+                    <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
+                      {profile.schedule.start} - {profile.schedule.end}
+                    </span>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant">Horario asignado (L-V)</p>
+                  </>
+                );
+              } else {
+                return (
+                  <>
+                    <span className="font-headline-sm text-headline-sm text-on-surface font-bold text-outline">Libre</span>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant">Sin turno hoy</p>
+                  </>
+                );
+              }
+            })()}
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-surface-container rounded-xl p-space-sm shadow-xs flex flex-col gap-2 mb-4">
+        <div className="flex items-center gap-space-xs text-on-surface-variant mb-1">
+          <CalendarDays size={16} className="text-secondary" />
+          <span className="font-label-md font-bold">Próximos Turnos (7 días)</span>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          {[0, 1, 2, 3, 4, 5, 6].map(offset => {
+            const date = addDays(new Date(), offset);
+            const dayStr = date.getDay().toString();
+            const dayData = profile?.weeklySchedule?.[dayStr];
+            
+            // Si es perfil viejo, simular Lunes-Viernes
+            let isWorking = false;
+            let start = '';
+            let end = '';
+            
+            if (dayData) {
+              isWorking = dayData.isActive;
+              start = dayData.start;
+              end = dayData.end;
+            } else if (profile?.schedule) {
+              const d = date.getDay();
+              if (d !== 0 && d !== 6) { // Not weekend
+                isWorking = true;
+                start = profile.schedule.start;
+                end = profile.schedule.end;
+              }
+            }
+
+            return (
+              <div key={offset} className={cn(
+                "flex items-center justify-between p-2 rounded-lg border",
+                offset === 0 ? "bg-primary-container/30 border-primary/30" : "bg-surface-container-low border-transparent",
+                !isWorking && "opacity-60"
+              )}>
+                <div className="flex flex-col">
+                  <span className={cn("font-label-sm font-bold capitalize", offset === 0 ? "text-primary" : "text-on-surface")}>
+                    {offset === 0 ? 'Hoy' : offset === 1 ? 'Mañana' : format(date, 'EEEE', { locale: es })}
+                  </span>
+                  <span className="font-body-xs text-outline">{format(date, 'dd MMM', { locale: es })}</span>
+                </div>
+                {isWorking ? (
+                  <span className="font-mono text-sm font-bold text-on-surface-variant">
+                    {start} - {end}
+                  </span>
+                ) : (
+                  <span className="font-label-sm text-outline italic">Descanso</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Visualizador de Geocerca GPS */}
-      <div className="relative rounded-xl overflow-hidden bg-surface-container shadow-sm flex flex-col">
+      <div className="relative rounded-xl overflow-hidden bg-surface-container shadow-sm flex flex-col mb-4">
         <div className="p-space-sm flex items-center justify-between z-10 bg-surface-container-high/90 backdrop-blur-sm">
           <div className="flex items-center gap-space-xs min-w-0">
             <span className="material-symbols-outlined text-[18px] text-secondary shrink-0">domain</span>
@@ -229,67 +357,7 @@ export function Fichaje() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-space-sm mt-space-xxs">
-        <div className="bg-surface-container rounded-xl p-space-sm flex flex-col justify-between shadow-xs">
-          <div className="flex items-center gap-space-xs text-on-surface-variant">
-            <span className="material-symbols-outlined text-[16px] text-secondary">history</span>
-            <span className="font-label-sm text-label-sm">Último Marcaje</span>
-          </div>
-          <div className="mt-space-xs">
-            <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
-              {lastPunch ? format(lastPunch.timestamp?.toDate ? lastPunch.timestamp.toDate() : new Date(), 'HH:mm') : 'Sin registro'}
-            </span>
-            <p className="font-body-sm text-body-sm text-outline">
-              {lastPunch ? (
-                lastPunch.type === 'in' ? 'Entrada' : 
-                lastPunch.type === 'lunch_start' ? 'Inicio Almuerzo' :
-                lastPunch.type === 'lunch_end' ? 'Fin Almuerzo' : 'Salida'
-              ) : 'Jornada no iniciada'}
-            </p>
-          </div>
-        </div>
-
-        <div className="bg-surface-container rounded-xl p-space-sm flex flex-col justify-between shadow-xs">
-          <div className="flex items-center gap-space-xs text-on-surface-variant">
-            <span className="material-symbols-outlined text-[16px] text-secondary">schedule</span>
-            <span className="font-label-sm text-label-sm">Horario Hoy</span>
-          </div>
-          <div className="mt-space-xs">
-            <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
-              {profile?.schedule ? `${profile.schedule.start} - ${profile.schedule.end}` : 'Sin horario'}
-            </span>
-            <p className="font-body-sm text-body-sm text-on-surface-variant">
-              {profile?.schedule ? 'Horario asignado' : 'Consulte con RRHH'}
-            </p>
-          </div>
-        </div>
-
-        <div className="bg-surface-container rounded-xl p-space-sm flex flex-col justify-between shadow-xs">
-          <div className="flex items-center gap-space-xs text-on-surface-variant">
-            <span className="material-symbols-outlined text-[16px] text-secondary">timer</span>
-            <span className="font-label-sm text-label-sm">Semana en Curso</span>
-          </div>
-          <div className="mt-space-xs">
-            <span className="font-headline-sm text-headline-sm text-on-surface font-bold">32h 15m</span>
-            <div className="w-full bg-surface-container-highest rounded-full h-1.5 mt-1.5 overflow-hidden">
-              <div className="bg-secondary h-1.5 rounded-full w-[80%]"></div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-surface-container rounded-xl p-space-sm flex flex-col justify-between shadow-xs">
-          <div className="flex items-center gap-space-xs text-on-surface-variant">
-            <span className="material-symbols-outlined text-[16px] text-secondary">security</span>
-            <span className="font-label-sm text-label-sm">Autenticación</span>
-          </div>
-          <div className="mt-space-xs">
-            <span className="font-headline-sm text-headline-sm text-on-surface font-bold">Facial + Knox</span>
-            <p className="font-body-sm text-body-sm text-on-surface-variant truncate">Enrolado v4.2</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-xl bg-surface-container-lowest p-space-sm shadow-xs flex items-center justify-between mb-24">
+      <div className="rounded-xl bg-surface-container-lowest p-space-sm shadow-xs flex items-center justify-between mb-4">
         <div className="flex items-center gap-space-sm min-w-0">
           <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-primary shrink-0">
             <span className="material-symbols-outlined text-[18px]">smartphone</span>
