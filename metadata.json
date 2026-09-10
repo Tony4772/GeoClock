@@ -1,0 +1,10 @@
+{
+  "name": "AsistenciaPro / GeoClock",
+  "description": "App de control de asistencia de empleados con geovallas, biometría y reportes, con backend en Firebase Firestore.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>GeoClock Asistencia</title>
+    <meta name="description" content="App de control de asistencia de empleados con geovallas, biometría y reportes." />
+    <meta property="og:title" content="GeoClock Asistencia" />
+    <meta property="og:description" content="App de control de asistencia de empleados con geovallas, biometría y reportes." />
+    <meta property="og:type" content="website" />
+    
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <style>
+      @layer base {
+        html, body { width: 100vw; margin: 0; padding: 0; }
+        body { overscroll-behavior: none; min-height: max(884px, 100dvh); }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+      }
+      ::-webkit-scrollbar { display: none; }
+    </style>
+  </head>
+  <body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

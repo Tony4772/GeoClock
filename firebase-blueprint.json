@@ -1,0 +1,75 @@
+{
+  "rules_version": "2",
+  "collections": {
+    "tenants": {
+      "__description__": "Organizations/Tenants",
+      "__schema__": {
+        "name": "string"
+      },
+      "__security__": {
+        "read": "isAuthenticated()",
+        "create": "false",
+        "update": "false",
+        "delete": "false"
+      }
+    },
+    "branches": {
+      "__description__": "Company locations with geofence",
+      "__schema__": {
+        "tenantId": "string",
+        "name": "string",
+        "latitude": "number",
+        "longitude": "number",
+        "radius": "number"
+      },
+      "__security__": {
+        "read": "isAuthenticated()",
+        "create": "isAdmin()",
+        "update": "isAdmin()",
+        "delete": "isAdmin()"
+      }
+    },
+    "users": {
+      "__description__": "User profiles (admins and employees)",
+      "__schema__": {
+        "email": "string",
+        "name": "string",
+        "role": "string",
+        "tenantId": "string",
+        "branchId": "string",
+        "deviceModel": "string"
+      },
+      "__security__": {
+        "read": "isAuthenticated()",
+        "create": "isAuthenticated()",
+        "update": "isAuthenticated()",
+        "delete": "isAdmin()"
+      }
+    },
+    "punches": {
+      "__description__": "Attendance records",
+      "__schema__": {
+        "employeeId": "string",
+        "tenantId": "string",
+        "branchId": "string",
+        "type": "string",
+        "timestamp": "timestamp",
+        "latitude": "number",
+        "longitude": "number",
+        "distance": "number",
+        "status": "string"
+      },
+      "__security__": {
+        "read": "isAdmin() || isOwner(resource.data.employeeId)",
+        "create": "isOwner(request.resource.data.employeeId)",
+        "update": "isAdmin()",
+        "delete": "isAdmin()"
+      }
+    }
+  },
+  "custom_functions": {
+    "isAuthenticated": "return request.auth != null;",
+    "isOwner": "return request.auth != null && request.auth.uid == userId;",
+    "isAdmin": "return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';"
+  }
+}

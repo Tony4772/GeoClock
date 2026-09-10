@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@theme {
+  --color-on-secondary-container: #fefcff;
+  --color-inverse-on-surface: #eef0ff;
+  --color-on-primary-fixed: #00164e;
+  --color-surface-container-highest: #dae2fd;
+  --color-on-background: #131b2e;
+  --color-on-surface: #131b2e;
+  --color-surface: #faf8ff;
+  --color-on-surface-variant: #444651;
+  --color-tertiary-container: #004a31;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary: #00311f;
+  --color-background: #faf8ff;
+  --color-surface-container-low: #f2f3ff;
+  --color-on-error-container: #93000a;
+  --color-on-primary: #ffffff;
+  --color-surface-variant: #dae2fd;
+  --color-inverse-primary: #b6c4ff;
+  --color-primary: #00236f;
+  --color-tertiary-fixed: #6ffbbe;
+  --color-on-tertiary-fixed-variant: #005236;
+  --color-on-primary-fixed-variant: #264191;
+  --color-inverse-surface: #283044;
+  --color-on-secondary-fixed: #00174b;
+  --color-tertiary-fixed-dim: #4edea3;
+  --color-on-tertiary-container: #27c38a;
+  --color-on-primary-container: #90a8ff;
+  --color-outline-variant: #c5c5d3;
+  --color-surface-bright: #faf8ff;
+  --color-surface-container: #eaedff;
+  --color-secondary: #0051d5;
+  --color-primary-container: #1e3a8a;
+  --color-primary-fixed-dim: #b6c4ff;
+  --color-primary-fixed: #dce1ff;
+  --color-surface-container-high: #e2e7ff;
+  --color-outline: #757682;
+  --color-on-secondary: #ffffff;
+  --color-surface-dim: #d2d9f4;
+  --color-error-container: #ffdad6;
+  --color-secondary-fixed-dim: #b4c5ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-secondary-fixed: #dbe1ff;
+  --color-on-tertiary-fixed: #002113;
+  --color-on-secondary-fixed-variant: #003ea8;
+  --color-surface-tint: #4059aa;
+  --color-secondary-container: #316bf3;
+
+  --spacing-space-sm: 0.5rem;
+  --spacing-margin-tablet: 1.5rem;
+  --spacing-margin-mobile: 1rem;
+  --spacing-space-xxs: 0.125rem;
+  --spacing-space-2xl: 2.5rem;
+  --spacing-space-base: 1rem;
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-md: 0.75rem;
+  --spacing-space-xl: 2rem;
+  --spacing-space-3xl: 3rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-gutter-screen: 1rem;
+}
+
+@utility font-label-lg { font-family: 'Inter', sans-serif; font-size: 0.875rem; line-height: 1.25rem; letter-spacing: 0.01em; font-weight: 600; }
+@utility font-label-sm { font-family: 'Inter', sans-serif; font-size: 0.6875rem; line-height: 0.875rem; letter-spacing: 0.05em; font-weight: 700; }
+@utility font-display-lg { font-family: 'Inter', sans-serif; font-size: 3.5rem; line-height: 4rem; letter-spacing: -0.02em; font-weight: 700; }
+@utility font-body-lg { font-family: 'Inter', sans-serif; font-size: 1rem; line-height: 1.5rem; letter-spacing: 0em; font-weight: 400; }
+@utility font-headline-md { font-family: 'Inter', sans-serif; font-size: 1.375rem; line-height: 1.875rem; letter-spacing: -0.01em; font-weight: 600; }
+@utility font-label-md { font-family: 'Inter', sans-serif; font-size: 0.75rem; line-height: 1rem; letter-spacing: 0.02em; font-weight: 600; }
+@utility font-headline-lg { font-family: 'Inter', sans-serif; font-size: 2rem; line-height: 2.5rem; letter-spacing: -0.015em; font-weight: 700; }
+@utility font-body-md { font-family: 'Inter', sans-serif; font-size: 0.875rem; line-height: 1.375rem; letter-spacing: 0.005em; font-weight: 400; }
+@utility font-headline-sm { font-family: 'Inter', sans-serif; font-size: 1.125rem; line-height: 1.625rem; letter-spacing: 0em; font-weight: 600; }
+@utility font-headline-lg-mobile { font-family: 'Inter', sans-serif; font-size: 1.625rem; line-height: 2.125rem; letter-spacing: -0.01em; font-weight: 700; }
+@utility font-mono-clock { font-family: 'Inter', sans-serif; font-size: 2.75rem; line-height: 3rem; letter-spacing: 0.04em; font-weight: 700; }
+@utility font-body-sm { font-family: 'Inter', sans-serif; font-size: 0.75rem; line-height: 1.125rem; letter-spacing: 0.01em; font-weight: 400; }
+
+@utility text-label-lg { font-size: 0.875rem; line-height: 1.25rem; letter-spacing: 0.01em; font-weight: 600; }
+@utility text-label-sm { font-size: 0.6875rem; line-height: 0.875rem; letter-spacing: 0.05em; font-weight: 700; }
+@utility text-display-lg { font-size: 3.5rem; line-height: 4rem; letter-spacing: -0.02em; font-weight: 700; }
+@utility text-body-lg { font-size: 1rem; line-height: 1.5rem; letter-spacing: 0em; font-weight: 400; }
+@utility text-headline-md { font-size: 1.375rem; line-height: 1.875rem; letter-spacing: -0.01em; font-weight: 600; }
+@utility text-label-md { font-size: 0.75rem; line-height: 1rem; letter-spacing: 0.02em; font-weight: 600; }
+@utility text-headline-lg { font-size: 2rem; line-height: 2.5rem; letter-spacing: -0.015em; font-weight: 700; }
+@utility text-body-md { font-size: 0.875rem; line-height: 1.375rem; letter-spacing: 0.005em; font-weight: 400; }
+@utility text-headline-sm { font-size: 1.125rem; line-height: 1.625rem; letter-spacing: 0em; font-weight: 600; }
+@utility text-headline-lg-mobile { font-size: 1.625rem; line-height: 2.125rem; letter-spacing: -0.01em; font-weight: 700; }
+@utility text-mono-clock { font-size: 2.75rem; line-height: 3rem; letter-spacing: 0.04em; font-weight: 700; }
+@utility text-body-sm { font-size: 0.75rem; line-height: 1.125rem; letter-spacing: 0.01em; font-weight: 400; }
+
+@layer base {
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
+    font-family: 'Inter', sans-serif;
+  }
+}
